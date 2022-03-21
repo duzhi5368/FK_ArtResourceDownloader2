@@ -1,0 +1,1 @@
+python3 GUI/__main__.py

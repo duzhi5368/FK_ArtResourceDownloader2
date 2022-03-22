@@ -331,10 +331,10 @@ class ArtStationTaskMaker:
         yield from self.GenTasks()
 
 #================================================================
-class ArtStationFetcher(FKBaseFetcher):
+class FKArtStationFetcher(FKBaseFetcher):
     def Save(self, content, taskItem):
         if taskItem.image.meta is None:
-            return super(ArtStationFetcher, self).Save(content, taskItem)
+            return super(FKArtStationFetcher, self).Save(content, taskItem)
         image = taskItem.image
         if image.meta is not None:
             escapedName = NormalizeName(image.meta['album_name'])
@@ -352,14 +352,14 @@ class ArtStationFetcher(FKBaseFetcher):
             f.write(content)
 
 #================================================================
-class ArtStation(FKBaseSite):
+class FKArtStationSite(FKBaseSite):
     def __init__(self, userUrl : str, proxy=None):
         self.tasks = None
         self.url = userUrl
         assert(userUrl.startswith(BASE_URL))
         self.username = userUrl.replace(BASE_URL, '')
         self.proxies = FromatProxy(proxy)
-        self.fetcher = ArtStationFetcher(**self.proxies)
+        self.fetcher = FKArtStationFetcher(**self.proxies)
         self.taskMaker = ArtStationTaskMaker(userUrl=userUrl, username=self.username, metaFetcher=ArtStationBrowserMetaFetcher())
 
     @property

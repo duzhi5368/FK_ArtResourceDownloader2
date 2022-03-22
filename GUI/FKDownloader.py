@@ -3,7 +3,7 @@ import time
 import tkinter as tk
 from Core.FKDownloader import FKDownloader
 from Utils.FKUtilsFunc import RunAsDaemonThread
-from GUI.FKEntry import ArtStationRun
+from GUI.FKEntry import ArtStationRun, HuabanRun, HuabanBoardRun
 from GUI.FKUITookits import (
     FKUI_NamedInput,
     FKUI_FileBrowser,
@@ -101,7 +101,7 @@ class FKUI_UserHomeDownloader(tk.Frame):
             self.status.Set(msg)
 
 #================================================================
-class FKUI_ArtStationDownlaoder(FKUI_UserHomeDownloader):
+class FKUI_ArtStationDownloader(FKUI_UserHomeDownloader):
     title = "ArtStation 按作者"
     def UserInputs(self):
         return {'proxy': FKUI_ProxyInput(master=self, name="代理地址(可支持http/https/socks5)，可不填")}
@@ -126,12 +126,36 @@ class FKUI_ArtStationDownlaoder(FKUI_UserHomeDownloader):
         return ArtStationRun(url=url, pathPrefix=pathPrefix, proxy=proxy)
 
 #================================================================
+class FKUI_HuabanDownloader(FKUI_UserHomeDownloader):
+    title = "花瓣 按作者"
+    def __init__(self, *args, **kwargs):
+        super(FKUI_HuabanDownloader, self).__init__(*args, storeName="huaban_save_path", **kwargs)
+
+    def Run(self, url, pathPrefix):
+        downloader, site = HuabanRun(url=url, pathPrefix=pathPrefix, returnSite=True)
+        return downloader
+
+#================================================================
+class FKUI_HuabanBoardDownloader(FKUI_UserHomeDownloader):
+    title = "花瓣 按画板"
+    def __init__(self, *args, **kwargs):
+        super(FKUI_HuabanBoardDownloader, self).__init__(
+            *args, storeName="huaban_board_save_path", userHomeName="画板地址", **kwargs
+        )
+
+    def Run(self, url, pathPrefix):
+        return HuabanBoardRun(url=url, pathPrefix=pathPrefix)
+
+#================================================================
+
 FKDownloaders = [
-    FKUI_ArtStationDownlaoder,
+    FKUI_ArtStationDownloader,
+    FKUI_HuabanDownloader,
+    FKUI_HuabanBoardDownloader,
     # todo
 ]
 
 __all__ = (
-    "FKUI_ArtStationDownlaoder",
+    "FKUI_ArtStationDownloader",
     "CreateFKNormalInputs"
 )

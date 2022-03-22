@@ -38,11 +38,3 @@ class FKApp(tk.Tk):
     def ContractUs():
         FKMessageInfo("有任何问题可联系作者邮箱: duzhi5368@gmail.com")
 
-
-def main():
-    app = FKApp()
-    app.mainloop()
-
-if __name__ == "__main__":
-    main()
-    

@@ -1,12 +1,10 @@
 import os
 import requests
-import json
-import re
 import time
 
+from json import JSONDecodeError
 from typing import NamedTuple
 from urllib.parse import urljoin
-from collections import Counter
 
 from Core.FKTaskItem import FKImageItem, FKTaskItem
 from Site.FKBaseSite import FKBaseSite
@@ -236,7 +234,7 @@ class ArtStationBaseMetaFetcher:
         return totalPage, curPage, resp['data']
 
     def GetProjectsSinglePage(self, username, page):
-        initialUrl = GetProjectAlbumsDetailPageUrl(username=username, page=page)
+        initialUrl = GetProjectPageUrl(username=username, page=page)
         resp = self.RequestUrl(initialUrl)
         if 'total_count' not in resp:
             return 0, 0, None
@@ -251,7 +249,11 @@ class ArtStationLocalMetaFetcher(ArtStationBaseMetaFetcher):
     
     def RequestUrl(self, url):
         resp = requests.get(url, headers=__FK_USER_AGENT__)
-        return resp.json()
+        try:
+            respJson = resp.json()
+        except JSONDecodeError:
+            respJson = ''
+        return respJson
 
 #================================================================
 class ArtStationTaskMaker:
@@ -260,17 +262,14 @@ class ArtStationTaskMaker:
         self.username = username
         self.metaFetcher = metaFetcher
         self.userId = None
-    
-    @staticmethod
-    def GetRepeatedUID(userIds):
-        counter = Counter(userIds)
-        topUID = counter.most_common(1)
-        return topUID[0][0]
 
     def GetUserId(self, userUrl):
-        resp = self.metaFetcher.RequestUrl(userUrl)
-        userIds = re.findall(r"user_id.*?(\d+)", resp)
-        return self.GetRepeatedUID(userIds)
+        userIds = userUrl
+        if "http" in userUrl:
+            return userUrl.replace('https://www.artstation.com/', '')
+        if "www.artstation.com"  in userUrl:
+            return userUrl.replace('www.artstation.com/', '')
+        return userIds
 
     def GetImageItemFromDetail(self, artworkSummary):
         summaryUrl = ParseArtworkUrl(artworkSummary)

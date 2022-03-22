@@ -14,7 +14,7 @@ class FKBaseFetcher:
             self.session.proxies = proxies
         self.session.headers.update(__FK_USER_AGENT__)
 
-    @Retry
+    @Retry()
     def Get(self, url, **kwargs):
         if 'timeout' in kwargs:
             kwargs.pop('timeout')

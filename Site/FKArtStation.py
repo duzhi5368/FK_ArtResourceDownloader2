@@ -8,7 +8,7 @@ from typing import NamedTuple
 from urllib.parse import urljoin
 from collections import Counter
 
-from Core.FKTaskItem import FKImageItem
+from Core.FKTaskItem import FKImageItem, FKTaskItem
 from Site.FKBaseSite import FKBaseSite
 from Utils.FKUtilsFunc import GetNameWithHashFromUrl, NormalizeName, NormalizePath, FromatProxy
 from Utils.Const import __FK_USER_AGENT__
@@ -332,7 +332,7 @@ class ArtStationTaskMaker:
 
 #================================================================
 class FKArtStationFetcher(FKBaseFetcher):
-    def Save(self, content, taskItem):
+    def Save(self, content, taskItem : FKTaskItem):
         if taskItem.image.meta is None:
             return super(FKArtStationFetcher, self).Save(content, taskItem)
         image = taskItem.image

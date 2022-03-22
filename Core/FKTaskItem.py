@@ -7,7 +7,7 @@ class FKImageItem(NamedTuple):
     pinMeta: dict = None
 
 class FKTaskItem(NamedTuple):
-    image: Any
+    image: FKImageItem
     baseSavePath: str
 
 class FKWorkerTask(NamedTuple):

@@ -26,7 +26,7 @@ class FKUI_UserHomeDownloader(tk.Frame):
     title = "未命名下载器"
     def __init__(self, *args, storeName=None, userHomeName=None, **kwargs):
         super(FKUI_UserHomeDownloader, self).__init__(*args, **kwargs)
-        self.downloader = None
+        self.downloader : FKDownloader = None
         self.url, self.savePath = CreateFKNormalInputs(self, storeName=storeName, userHomeName=userHomeName)
         for attrName, value in self.UserInputs().items():
             setattr(self, attrName, value)
@@ -96,7 +96,7 @@ class FKUI_UserHomeDownloader(tk.Frame):
         else:
             self.progress.UpdateProgress(self.downloader.counter.done, self.downloader.counter.total)
             msg = self.downloader.counter.ToString()
-            if self.downloader.done:
+            if self.downloader.isDone:
                 msg = msg + " 已全部下载完成，可开始新的下载任务了"
             self.status.Set(msg)
 

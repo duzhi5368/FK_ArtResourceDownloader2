@@ -45,18 +45,6 @@ def Retry(maxTimes=3):
 
     return wrapper
 
-def DownloadThenSave(fetcher):
-
-    def downloadThenSave(taskItem: FKTaskItem):
-        response = fetcher.get(taskItem.image.url)
-        if response is None:
-            FKLogger.error("下载图片：%s 失败" % taskItem.image.url)
-            return
-        fetcher.save(response.content, taskItem)
-        return True
-
-    return downloadThenSave
-
 def NormalizeProxyString(proxyString):
     if 'socks5' in proxyString:
         if 'socks5h' not in proxyString:

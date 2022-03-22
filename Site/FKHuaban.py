@@ -44,7 +44,7 @@ class FKHuabanFetcher(FKBaseFetcher):
         savePath = NormalizePath(savePath)
         return savePath
     
-    @Retry
+    @Retry()
     def Get(self, url, requireJson=False, **kwargs):
         if 'timeout' in kwargs:
             kwargs.pop('timeout')
@@ -118,7 +118,7 @@ class Board(object):
         boardId = str(boardUrlOrId)
         self.fetcher = FKHuabanFetcher()
         if "http"  in boardId:
-            boardId = re.findall(r'boards/(\d+)/', boardId)[0]
+            boardId = re.findall(r'boards/(\d+)', boardId)[0]
         self.id = boardId
         path = "/boards/{boardId}".format(boardId=boardId)
         self.baseUrl = urljoin(BASE_URL, path)
@@ -131,7 +131,7 @@ class Board(object):
 
     def FetchHome(self):
         resp = self.fetcher.Get(self.baseUrl, requireJson=True)
-        resp = resp.json
+        resp = resp.json()
         board = resp['board']
         self.pinCount = board['pin_count']
         self.title = board['title']
@@ -233,7 +233,7 @@ class User(object):
 
 #================================================================
 class FKHuabanSite(FKBaseSite):
-    fetcher = FKHuabanFetcher()
+    Fetcher = FKHuabanFetcher()
 
     def __init__(self, userUrl):
         self.meta = None
@@ -265,7 +265,7 @@ class FKHuabanSite(FKBaseSite):
 
 #================================================================
 class FKHuabanBoard(FKBaseSite):
-    fetcher = FKHuabanFetcher()
+    Fetcher = FKHuabanFetcher()
 
     def __init__(self, boardUrl):
         self.baseUrl = boardUrl

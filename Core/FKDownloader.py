@@ -5,9 +5,23 @@ from queue import Queue
 from functools import wraps
 
 from Utils.FKStoppableThread import FKStoppableThread
-from Utils.FKUtilsFunc import DownloadThenSave, RunAsDaemonThread
+from Utils.FKUtilsFunc import RunAsDaemonThread
+from Utils.FKLogger import FKLogger
+from Site.FKBaseFetcher import FKBaseFetcher
 from Core.FKTaskItem import FKTaskItem, FKWorkerTask
 from Core.FKTaskCounter import FKTaskCounter
+
+def DownloadThenSave(fetcher : FKBaseFetcher):
+
+    def downloadThenSave(taskItem: FKTaskItem):
+        response = fetcher.Get(taskItem.image.url)
+        if response is None:
+            FKLogger.error("下载图片：%s 失败" % taskItem.image.url)
+            return
+        fetcher.Save(response.content, taskItem)
+        return True
+
+    return downloadThenSave
 
 class FKDownloader:
     def __init__(self, fetcher, workerNum = 5, saveDir = '.'):

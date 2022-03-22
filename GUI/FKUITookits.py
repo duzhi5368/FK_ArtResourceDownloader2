@@ -81,17 +81,6 @@ class FKUI_PasswordInput(tk.Frame):
             return ValueError("错误，输入内容为空")
 
 #================================================================
-class FKUI_ProxyInput(FKUI_NamedInput):
-    def AssertNoError(self):
-        text = self.GetInput()
-        if not text:
-            return
-        results = [kw in text for kw in ('http', 'https', 'socks5')]
-        if not any(results):
-            FKMessageInfo("代理地址错误")
-            return ValueError("代理地址格式不正确")
-
-#================================================================
 class FKUI_FileBrowser(tk.Frame):
     def __init__(self, master=None, store_name=None, text_label=None, **kwargs):
         super(FKUI_FileBrowser, self).__init__(master=master, **kwargs)

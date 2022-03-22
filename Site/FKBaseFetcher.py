@@ -2,7 +2,7 @@ import os
 import requests
 from flask import request
 
-from Core.FKTaskItem import FKImageItem
+from Core.FKTaskItem import FKImageItem, FKTaskItem
 from Utils.Const import __FK_USER_AGENT__
 from Utils.FKUtilsFunc import NormalizePath, Retry
 
@@ -24,7 +24,7 @@ class FKBaseFetcher:
         savePath = os.path.join(basePath, imageName)
         return savePath
     
-    def Save(self, content, taskItem):
+    def Save(self, content, taskItem:FKTaskItem):
         image = taskItem.image
         imageName = image.name
         if callable(image.name):

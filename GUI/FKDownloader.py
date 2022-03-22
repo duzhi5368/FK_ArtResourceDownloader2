@@ -10,7 +10,6 @@ from GUI.FKUITookits import (
     FKUI_StatusBar,
     FKUI_ProgressBar,
     FKUI_PasswordInput,
-    FKUI_ProxyInput,
     OpenSysExplorer,
     FKMessageInfo,
 )
@@ -103,27 +102,23 @@ class FKUI_UserHomeDownloader(tk.Frame):
 #================================================================
 class FKUI_ArtStationDownloader(FKUI_UserHomeDownloader):
     title = "ArtStation 按作者"
-    def UserInputs(self):
-        return {'proxy': FKUI_ProxyInput(master=self, name="代理地址(可支持http/https/socks5)，可不填")}
-    
+
     def StartDownload(self):
         self.url.AssertNoError()
         self.savePath.AssertNoError()
-        self.proxy.AssertNoError()
 
         url = self.url.GetInput()
         pathPrefix = self.savePath.GetPath()
-        proxy = self.proxy.GetInput()
 
         if not os.access(pathPrefix, os.W_OK):
             return FKMessageInfo("下载文件夹没有读写权限，请重新选择")
         if self.downloader is not None:
             if not self.downloader.isDone:
                 return FKMessageInfo("请先停止当前下载后，再重新点击下载")
-        self.downloader = self.Run(url=url, pathPrefix=pathPrefix, proxy=proxy)
+        self.downloader = self.Run(url=url, pathPrefix=pathPrefix)
 
-    def Run(self, url, pathPrefix, proxy):
-        return ArtStationRun(url=url, pathPrefix=pathPrefix, proxy=proxy)
+    def Run(self, url, pathPrefix):
+        return ArtStationRun(url=url, pathPrefix=pathPrefix)
 
 #================================================================
 class FKUI_HuabanDownloader(FKUI_UserHomeDownloader):

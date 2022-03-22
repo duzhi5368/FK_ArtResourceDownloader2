@@ -45,24 +45,6 @@ def Retry(maxTimes=3):
 
     return wrapper
 
-def NormalizeProxyString(proxyString):
-    if 'socks5' in proxyString:
-        if 'socks5h' not in proxyString:
-            proxyString = proxyString.replace('socks5', 'socks5h')
-    return proxyString
-
-def FromatProxy(proxyString):
-    if proxyString is None:
-        return {}
-    proxyString = NormalizeProxyString(proxyString)
-    formattedProxyString = {
-        'proxies': {
-            'http': proxyString,
-            'https': proxyString,
-        }
-    }
-    return formattedProxyString
-
 def NormalizeName(name):
     name = name.replace("/", " ")
     name = name.replace("\\", " ")

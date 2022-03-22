@@ -11,7 +11,7 @@ from Site.FKBaseFetcher import FKBaseFetcher
 from Core.FKTaskItem import FKTaskItem, FKWorkerTask
 from Core.FKTaskCounter import FKTaskCounter
 
-def DownloadThenSave(fetcher : FKBaseFetcher):
+def CreateDownloadThenSave(fetcher : FKBaseFetcher):
 
     def downloadThenSave(taskItem: FKTaskItem):
         response = fetcher.Get(taskItem.image.url)
@@ -43,7 +43,7 @@ class FKDownloader:
                 return ret
             return wrapped
 
-        downloadThenSave = DownloadThenSave(fetcher)
+        downloadThenSave = CreateDownloadThenSave(fetcher)
         taskFunc = CounterWrapper(downloadThenSave)
 
         self.downloadWorkders = [FKStoppableThread(self.downloadQueue, taskFunc) for _ in range(workerNum)]
@@ -69,7 +69,8 @@ class FKDownloader:
                 break
             taskItem = FKTaskItem(image=image, baseSavePath=self.saveDir)
             self.counter.IncrementTotal()
-            self.downloadQueue.put(FKWorkerTask(kwargs={'FKTaskItem': taskItem}))
+            self.downloadQueue.put(FKWorkerTask(kwargs={'taskItem': taskItem}))
+            #print("==[debug]== add %d" % self.downloadQueue.qsize())
         self.isAllTaskAdded = True
     
     def Join(self, background = False):
@@ -78,6 +79,7 @@ class FKDownloader:
             while not self.isAllTaskAdded:
                 time.sleep(0.2)
                 self.downloadQueue.join()
+                #print("==[debug]== join %d" % self.downloadQueue.qsize())
             self.isDone = True
         
         if background:

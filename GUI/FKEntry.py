@@ -5,7 +5,7 @@ from Site.FKArtStation import FKArtStationSite
 from Site.FKBaseSite import FKBaseSite
 from Site.FKHuaban import FKHuabanSite, FKHuabanBoard
 
-def UserHomeRun(site, pathPrefix=None):
+def UserHomeRun(site:FKBaseSite, pathPrefix=None):
     path = site.DirName
     if pathPrefix is not None:
         path = os.path.join(pathPrefix, path)
@@ -14,8 +14,8 @@ def UserHomeRun(site, pathPrefix=None):
     downloader.Join(background=True)
     return downloader
 
-def ArtStationRun(url, pathPrefix=None, proxy=None):
-    site = FKArtStationSite(userUrl=url, proxy=proxy)
+def ArtStationRun(url, pathPrefix=None):
+    site = FKArtStationSite(userUrl=url)
     return UserHomeRun(site, pathPrefix=pathPrefix)
 
 def HuabanRun(url, pathPrefix=None, returnSite=True):

@@ -10,9 +10,8 @@ from collections import Counter
 
 from Core.FKTaskItem import FKImageItem, FKTaskItem
 from Site.FKBaseSite import FKBaseSite
-from Utils.FKUtilsFunc import GetNameWithHashFromUrl, NormalizeName, NormalizePath, FromatProxy
+from Utils.FKUtilsFunc import GetNameWithHashFromUrl, NormalizeName, NormalizePath
 from Utils.Const import __FK_USER_AGENT__
-from RPC.FKTaskServer import FKServer
 from Site.FKBaseFetcher import FKBaseFetcher
 #================================================================
 BASE_URL = "https://www.artstation.com/"
@@ -247,26 +246,12 @@ class ArtStationBaseMetaFetcher:
 
 #================================================================
 class ArtStationLocalMetaFetcher(ArtStationBaseMetaFetcher):
-    def __init__(self, proxies):
-        self.proxies = proxies
-    
-    def RequestUrl(self, url):
-        resp = requests.get(url, headers=__FK_USER_AGENT__, proxies=self.proxies)
-        return resp.json()
-
-#================================================================
-class ArtStationBrowserMetaFetcher(ArtStationBaseMetaFetcher):
-    server = FKServer
-
     def __init__(self):
-        self.server.Start()
+        super(ArtStationLocalMetaFetcher, self).__init__()
     
     def RequestUrl(self, url):
-        text = self.server.requester.SendAndWait(url, timeout=10, maxRetry=3)
-        try:
-            return json.loads(text)
-        except json.JSONDecodeError:
-            return text
+        resp = requests.get(url, headers=__FK_USER_AGENT__)
+        return resp.json()
 
 #================================================================
 class ArtStationTaskMaker:
@@ -353,14 +338,13 @@ class FKArtStationFetcher(FKBaseFetcher):
 
 #================================================================
 class FKArtStationSite(FKBaseSite):
-    def __init__(self, userUrl : str, proxy=None):
+    def __init__(self, userUrl : str):
         self.tasks = None
         self.url = userUrl
         assert(userUrl.startswith(BASE_URL))
         self.username = userUrl.replace(BASE_URL, '')
-        self.proxies = FromatProxy(proxy)
-        self.fetcher = FKArtStationFetcher(**self.proxies)
-        self.taskMaker = ArtStationTaskMaker(userUrl=userUrl, username=self.username, metaFetcher=ArtStationBrowserMetaFetcher())
+        self.fetcher = FKArtStationFetcher()
+        self.taskMaker = ArtStationTaskMaker(userUrl=userUrl, username=self.username, metaFetcher=ArtStationLocalMetaFetcher())
 
     @property
     def DirName(self):

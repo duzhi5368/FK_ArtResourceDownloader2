@@ -36,7 +36,7 @@ class FKHuabanFetcher(FKBaseFetcher):
         self.session.headers.update(XHR_HEADERS)
     
     @classmethod
-    def GetSavePath(cls, taskItem):
+    def GetSavePathImp(cls, taskItem:FKTaskItem):
         boardName = NormalizeName(taskItem.image.meta['board_name'])
         savePath = os.path.join(taskItem.baseSavePath, boardName)
         os.makedirs(savePath, exist_ok=True)
@@ -60,7 +60,7 @@ class FKHuabanFetcher(FKBaseFetcher):
     def Save(self, content, taskItem: FKTaskItem):
         if taskItem.image.meta is None:
             return super(FKHuabanFetcher, self).Save(content, taskItem)
-        savePath = self.GetSavePath()
+        savePath = self.GetSavePathImp(taskItem)
         with open(savePath, "wb") as f:
             f.write(content)
 
@@ -182,9 +182,13 @@ class Board(object):
 
 #================================================================
 class User(object):
-    def __init__(self, userUrl):
+    def __init__(self, userUrl:str):
         self.fetcher = FKHuabanFetcher()
-        self.baseUrl = userUrl
+        if "http"  in userUrl:
+            urlPath = userUrl.replace('/user/', '/')
+        else:
+            urlPath = BASE_URL + "/" + userUrl
+        self.baseUrl = urlPath
         self.furtherUrlTpl = urljoin(self.baseUrl, "?{randomString}&max={boardId}&limit=10&wfl=1")
         self.username = None
         self.boardCount = None
@@ -197,7 +201,7 @@ class User(object):
         userMeta = resp.json()['user']
         self.username = userMeta['username']
         self.boardCount = userMeta['board_count']
-        self.pinCount = userMeta['pinCount']
+        self.pinCount = userMeta['pin_count']
         return GetBoards(userMeta)
     
     def FetchFurther(self, prevBoards):

@@ -70,6 +70,9 @@ def GetNameAndExtFromUrl(url):
     ext = fileName.split('.')[-1]
     return name, ext
 
+def GetFileExtension(imageName):
+    return imageName.split('.')[-1]
+
 def GetFilenameFromUrl(url):
     name, ext = GetNameAndExtFromUrl(url)
     return ".".join(name, ext)
@@ -85,4 +88,7 @@ def NormalizeFileName(filename):
     filename = filename.replace("/", "_")
     filename = filename.replace("?", "__")
     filename = filename.replace(":", "___")
+    filename = filename.replace("../", "_")
+    filename = filename.replace("..\\", "_")
+    filename = filename.replace("\\", "_")
     return filename

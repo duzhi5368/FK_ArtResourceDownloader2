@@ -48,6 +48,8 @@ class FKPixivFetcher(FKBaseFetcher):
         os.makedirs(savePath, exist_ok=True)
         savePath = NormalizePath(savePath)
         savePath = os.path.join(savePath, image.name)
+        if os.path.exists(savePath):
+            return
         with open(savePath, "wb") as f:
             f.write(content)
 

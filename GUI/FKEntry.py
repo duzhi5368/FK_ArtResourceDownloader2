@@ -4,6 +4,7 @@ from Core.FKDownloader import FKDownloader
 from Site.FKArtStation import FKArtStationSite
 from Site.FKBaseSite import FKBaseSite
 from Site.FKHuaban import FKHuabanSite, FKHuabanBoard
+from Site.FKPinterest import FKPinterestSite
 from Site.FKPixiv import FKPixivSite
 
 def UserHomeRun(site:FKBaseSite, pathPrefix=None):
@@ -32,4 +33,8 @@ def HuabanBoardRun(url, pathPrefix=None):
 
 def PixivRun(url, refreshToken, pathPrefix=None):
     site = FKPixivSite(url=url, refreshToken=refreshToken)
+    return UserHomeRun(site, pathPrefix)
+
+def PinterestRun(url, pathPrefix=None):
+    site = FKPinterestSite(url)
     return UserHomeRun(site, pathPrefix)

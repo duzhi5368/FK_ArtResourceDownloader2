@@ -332,6 +332,8 @@ class FKArtStationFetcher(FKBaseFetcher):
         else:
             iamgeName = image.name
         savePath = os.path.join(savePath, imageName)
+        if os.path.exists(savePath):
+            return
         with open(savePath, "wb") as f:
             f.write(content)
 

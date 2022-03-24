@@ -61,6 +61,8 @@ class FKHuabanFetcher(FKBaseFetcher):
         if taskItem.image.meta is None:
             return super(FKHuabanFetcher, self).Save(content, taskItem)
         savePath = self.GetSavePathImp(taskItem)
+        if os.path.exists(savePath):
+            return
         with open(savePath, "wb") as f:
             f.write(content)
 

@@ -3,7 +3,7 @@ import time
 import tkinter as tk
 from Core.FKDownloader import FKDownloader
 from Utils.FKUtilsFunc import RunAsDaemonThread
-from GUI.FKEntry import ArtStationRun, HuabanRun, HuabanBoardRun, PixivRun
+from GUI.FKEntry import ArtStationRun, HuabanRun, HuabanBoardRun, PinterestRun, PixivRun
 from GUI.FKUITookits import (
     FKUI_NamedInput,
     FKUI_FileBrowser,
@@ -22,7 +22,8 @@ def CreateFKNormalInputs(master=None, storeName=None, userHomeName=None):
 
 def CreateFKPixivInputs(master=None):
     url = FKUI_NamedInput(master, name="用户主页地址")
-    refreshToken = FKUI_NamedInput(master, name="RefreshToken（参见：https://gist.github.com/ZipFile/c9ebedb224406f4f11845ab700124362）")
+    # （参见：https://gist.github.com/ZipFile/c9ebedb224406f4f11845ab700124362）
+    refreshToken = FKUI_NamedInput(master, name="RefreshToken")
     savePath = FKUI_FileBrowser(master, store_name="pixiv_save_path")
     return url, refreshToken, savePath
 
@@ -224,11 +225,22 @@ class FKUI_PixivDownloader(tk.Frame):
                 msg = msg + " 已全部下载完成，可开始新的下载任务了"
             self.status.Set(msg)
 #================================================================
+class FKUI_PinterestDownloader(FKUI_UserHomeDownloader):
+    title = "Pinterest 按作者"
+    def __init__(self, *args, **kwargs):
+        super(FKUI_PinterestDownloader, self).__init__(*args, storeName="pinterest_save_path", **kwargs)
+
+    def Run(self, url, pathPrefix):
+        downloader = PinterestRun(url=url, pathPrefix=pathPrefix)
+        return downloader
+
+#================================================================
 FKDownloaders = [
     FKUI_ArtStationDownloader,
     FKUI_HuabanDownloader,
     FKUI_HuabanBoardDownloader,
     FKUI_PixivDownloader,
+    FKUI_PinterestDownloader,
     # todo
 ]
 

@@ -1,6 +1,4 @@
 pyinstaller
-flask
-colorama
 lxml
 requests
-termcolor
+pillow

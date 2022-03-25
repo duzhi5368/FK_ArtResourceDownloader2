@@ -4,7 +4,6 @@ import requests
 import time
 import lxml.html as html
 
-from pathlib import PurePath
 from json import JSONDecodeError
 from urllib.parse import urlparse, urlencode, unquote
 from Core.FKTaskItem import FKImageItem, FKTaskItem

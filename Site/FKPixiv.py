@@ -1,7 +1,6 @@
 import os
 import re
 
-from flask import request
 from pixivpy3 import AppPixivAPI, PixivError
 from GUI.FKUITookits import FKMessageInfo
 

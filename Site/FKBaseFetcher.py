@@ -1,6 +1,5 @@
 import os
 import requests
-from flask import request
 
 from Core.FKTaskItem import FKImageItem, FKTaskItem
 from Utils.Const import __FK_USER_AGENT__

@@ -37,7 +37,7 @@ def Retry(maxTimes=3):
                     return func(*args,**kwargs)
                 except Exception:
                     if round > maxTimes:
-                        FKLogger.error("调用函数 %s 异常" % func.__name__)
+                        FKLogger.error("调用函数 %s 失败" % func.__name__)
                         break
                     time.sleep(1)
             return None
@@ -86,9 +86,21 @@ def GetNameWithHashFromUrl(url, fileContent):
 
 def NormalizeFileName(filename):
     filename = filename.replace("/", "_")
-    filename = filename.replace("?", "__")
-    filename = filename.replace(":", "___")
+    filename = filename.replace("?", "_")
+    filename = filename.replace(":", "_")
     filename = filename.replace("../", "_")
     filename = filename.replace("..\\", "_")
     filename = filename.replace("\\", "_")
-    return filename
+    filename = filename.replace('<', '_')
+    filename = filename.replace('>', '_')
+    filename = filename.replace('"', '\'')
+    filename = filename.replace('*', '_')
+    filename = filename.replace('|', '_')
+    filename = filename.strip()
+    return 
+    
+def ImageSortFunc(x):
+    prefix = x.split('.')[0].split('_')[0]
+    if prefix.isdigit():
+        return int(prefix)
+    return 0

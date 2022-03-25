@@ -1,3 +1,6 @@
 pyinstaller
 flask
-pixivpy3
+colorama
+lxml
+requests
+termcolor

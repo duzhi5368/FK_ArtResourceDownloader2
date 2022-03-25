@@ -2,3 +2,5 @@ pyinstaller
 lxml
 requests
 pillow
+PixivPy
+gppt

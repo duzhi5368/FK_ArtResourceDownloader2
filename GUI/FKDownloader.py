@@ -2,6 +2,7 @@ import os
 import time
 import tkinter as tk
 from Core.FKDownloader import FKDownloader
+from gppt import GetPixivToken
 from Utils.FKUtilsFunc import RunAsDaemonThread
 from GUI.FKEntry import ArtStationRun, HuabanRun, HuabanBoardRun, PinterestRun, PixivRun
 from GUI.FKUITookits import (
@@ -24,8 +25,10 @@ def CreateFKPixivInputs(master=None):
     url = FKUI_NamedInput(master, name="用户主页地址")
     # （参见：https://gist.github.com/ZipFile/c9ebedb224406f4f11845ab700124362）
     refreshToken = FKUI_NamedInput(master, name="RefreshToken")
+    pivixUsername = FKUI_NamedInput(master, name="Pixiv账号")
+    pivixPassword = FKUI_PasswordInput(master, name="Pixiv密码")
     savePath = FKUI_FileBrowser(master, store_name="pixiv_save_path")
-    return url, refreshToken, savePath
+    return url, refreshToken, pivixUsername, pivixPassword, savePath
 
 #================================================================
 class FKUI_UserHomeDownloader(tk.Frame):
@@ -40,6 +43,9 @@ class FKUI_UserHomeDownloader(tk.Frame):
         self.progress = FKUI_ProgressBar(self)
         self.status = FKUI_StatusBar(self)
         self.StartUpdate()
+    
+    def SetUrlPlaceholder(self, text):
+        self.url.SetInputPlaceholder(text)
     
     def UserInputs(self):
         return {}
@@ -110,6 +116,10 @@ class FKUI_UserHomeDownloader(tk.Frame):
 class FKUI_ArtStationDownloader(FKUI_UserHomeDownloader):
     title = "ArtStation 按作者"
 
+    def __init__(self, *args, **kwargs):
+        super(FKUI_ArtStationDownloader, self).__init__(*args, storeName="artstation_save_path", **kwargs)
+        self.SetUrlPlaceholder("https://www.artstation.com/frankie_wong")
+
     def StartDownload(self):
         self.url.AssertNoError()
         self.savePath.AssertNoError()
@@ -132,6 +142,7 @@ class FKUI_HuabanDownloader(FKUI_UserHomeDownloader):
     title = "花瓣 按作者"
     def __init__(self, *args, **kwargs):
         super(FKUI_HuabanDownloader, self).__init__(*args, storeName="huaban_save_path", **kwargs)
+        self.SetUrlPlaceholder("https://huaban.com/user/olqxc2ncpu")
 
     def Run(self, url, pathPrefix):
         downloader, site = HuabanRun(url=url, pathPrefix=pathPrefix, returnSite=True)
@@ -144,6 +155,7 @@ class FKUI_HuabanBoardDownloader(FKUI_UserHomeDownloader):
         super(FKUI_HuabanBoardDownloader, self).__init__(
             *args, storeName="huaban_board_save_path", userHomeName="画板地址", **kwargs
         )
+        self.SetUrlPlaceholder("https://huaban.com/boards/24598373")
 
     def Run(self, url, pathPrefix):
         return HuabanBoardRun(url=url, pathPrefix=pathPrefix)
@@ -156,10 +168,13 @@ class FKUI_PixivDownloader(tk.Frame):
     def __init__(self, *args, **kwargs):
         super(FKUI_PixivDownloader, self).__init__(*args, **kwargs)
         self.downloader = None
-        self.url, self.refreshToken, self.savePath = CreateFKPixivInputs(self)
+        self.url, self.refreshToken, self.userName, self.password, self.savePath = CreateFKPixivInputs(self)
         self.btnGroup = self.BuildButtons()
         self.progress = FKUI_ProgressBar(self)
         self.status = FKUI_StatusBar(self)
+        self.url.SetInputPlaceholder("https://www.pixiv.net/users/74700573")
+        self.refreshToken.SetInputPlaceholder("请网上查询如何获取 或 填写下方pixiv帐号密码后点击【获取refresh_token】按钮")
+        self.userName.SetInputPlaceholder("如自行填写 refresh_token，则无需填写账号密码")
         self.StartUpdate()
 
     def BuildButtons(self):
@@ -170,7 +185,8 @@ class FKUI_PixivDownloader(tk.Frame):
             for text, command in (
                 ("开始下载", self.StartDownload),
                 ("停止下载", self.StopDownload),
-                ("打开下载文件夹", self.OpenDownloadFolder)
+                ("打开下载文件夹", self.OpenDownloadFolder),
+                ("获取refresh_token", self.AutoGetFreshToken)
             )
         ]
         for index, btn in enumerate(buttons):
@@ -202,6 +218,18 @@ class FKUI_PixivDownloader(tk.Frame):
         if self.downloader is not None:
             self.downloader.Stop()
             self.downloader = None
+    
+    def AutoGetFreshToken(self):
+        # 依赖库和说明 https://github.com/eggplants/get-pixivpy-token
+        # 资源下载 https://chromedriver.chromium.org/downloads
+        chromeFilePath = os.getcwd() + "/chromedriver.exe" 
+        if not os.path.exists(chromeFilePath):
+            FKMessageInfo("请去 https://chromedriver.chromium.org/downloads 下载本机chrome对应版本的chromeDriver，解压后放置到本目录内。")
+        else:
+            username = self.userName.GetInput()
+            password = self.password.GetInput()
+            resp = GetPixivToken().login(headless=True, user=username, pass_=password)
+            self.refreshToken.SetInputPlaceholder(resp['refresh_token'])
 
     def StartUpdate(self):
         RunAsDaemonThread(self.UpdateLoop)
@@ -229,6 +257,7 @@ class FKUI_PinterestDownloader(FKUI_UserHomeDownloader):
     title = "Pinterest 按作者"
     def __init__(self, *args, **kwargs):
         super(FKUI_PinterestDownloader, self).__init__(*args, storeName="pinterest_save_path", **kwargs)
+        self.SetUrlPlaceholder("https://www.pinterest.ph/duzhi5368/_saved/")
 
     def Run(self, url, pathPrefix):
         downloader = PinterestRun(url=url, pathPrefix=pathPrefix)

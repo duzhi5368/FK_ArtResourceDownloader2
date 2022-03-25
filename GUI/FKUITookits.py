@@ -52,6 +52,10 @@ class FKUI_NamedInput(tk.Frame):
 
     def GetInput(self):
         return self.entry.get()
+
+    def SetInputPlaceholder(self, text):
+        self.entry.delete(0, tk.END)
+        self.entry.insert(tk.END, text)
     
     def AssertNoError(self):
         text = self.GetInput()

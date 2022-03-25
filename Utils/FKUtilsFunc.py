@@ -97,7 +97,7 @@ def NormalizeFileName(filename):
     filename = filename.replace('*', '_')
     filename = filename.replace('|', '_')
     filename = filename.strip()
-    return 
+    return filename
     
 def ImageSortFunc(x):
     prefix = x.split('.')[0].split('_')[0]

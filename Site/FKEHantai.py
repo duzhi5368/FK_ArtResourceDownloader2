@@ -60,23 +60,35 @@ class FKEHantaiTag(FKBaseSite):
 
     def FetchBenzis(self):
         for url in self.urls:
-            try:
-                resp = self.fetcher.Get(url)
-                soup = BeautifulSoup(resp.text, 'lxml')
-                divs = soup.find_all(class_='gdtm')
-                title = str(soup.h1.get_text())
-                dirPath = re.sub(r"[\/\\\:\*\?\"\<\>\|]", "-", title)
-                dirPath = NormalizeFileName(dirPath)
-                page = 0
-                for div in divs:
-                    page = page + 1
-                    picUrl = div.a.get('href')
-                    picUrlSrc = self.FetchPicUrl(picUrl)
-                    ext = picUrlSrc.split(".")[-1]
-                    if picUrlSrc:
-                        yield FKImageItem(url=picUrlSrc, name=str(page) + '.' + ext, meta={'dir_name': dirPath})
-            except:
-                pass
+            yield from self.FetchBenzi(url, 0)
+
+    def FetchBenzi(self, url, page):
+        totalPics = 0
+        try:
+            if page == 0:
+                reallyUrl = url
+            else:
+                reallyUrl = url + "?p=" + str(page)
+            resp = self.fetcher.Get(reallyUrl)
+            soup = BeautifulSoup(resp.text, 'lxml')
+            divs = soup.find_all(class_='gdtm')
+            totalPics = int(soup.find('div', id='gdd').find_all(class_="gdt2")[5].string.split(' ')[0])
+            index = 0
+            for div in divs:
+                index = index + 1
+                picUrl = div.a.get('href')
+                picUrlSrc = self.FetchPicUrl(picUrl)
+                ext = picUrlSrc.split(".")[-1]
+                if picUrlSrc:
+                    yield FKImageItem(url=picUrlSrc, name=str(index) + '.' + ext)
+            
+            totalPages = totalPics // 40
+            if totalPages <= page:
+                return
+            else:
+                yield from self.FetchBenzi(url, page+1)
+        except:
+            pass
 
     def FetchPicUrl(self, url):
         try:
@@ -126,7 +138,7 @@ class FKEhantaiSite(FKBaseSite):
     
     @property
     def Tasks(self):
-        yield from self.FetchBenzi()
+        yield from self.FetchBenzi(self.url, 0)
 
     def GetDirPath(self):
         if self.url.find(BOARD_URL) == -1:
@@ -135,13 +147,10 @@ class FKEhantaiSite(FKBaseSite):
         try:
             resp = self.fetcher.Get(self.url)
             soup = BeautifulSoup(resp.text, 'lxml')
-            divs = soup.find_all(class_='gdtm')
             title = str(soup.h1.get_text())
-            page = 0
-            for _ in divs:
-                page = page + 1
+            totalPages = int(soup.find('div', id='gdd').find_all(class_="gdt2")[5].string.split(' ')[0])
             dirPath = re.sub(r"[\/\\\:\*\?\"\<\>\|]", "-", title)
-            dirPath = dirPath + '_' + str(page) + '页'
+            dirPath = dirPath + '_' + str(totalPages) + '页'
             dirPath = NormalizeFileName(dirPath)
             FKLogger.info("保存路径为 %s" % dirPath)
         except:
@@ -149,19 +158,31 @@ class FKEhantaiSite(FKBaseSite):
             return time.time()
         return dirPath
 
-    def FetchBenzi(self):
+    def FetchBenzi(self, url, page):
+        totalPics = 0
         try:
-            resp = self.fetcher.Get(self.url)
+            if page == 0:
+                reallyUrl = url
+            else:
+                reallyUrl = url + "?p=" + str(page)
+            resp = self.fetcher.Get(reallyUrl)
             soup = BeautifulSoup(resp.text, 'lxml')
             divs = soup.find_all(class_='gdtm')
-            page = 0
+            totalPics = int(soup.find('div', id='gdd').find_all(class_="gdt2")[5].string.split(' ')[0])
+            index = 0
             for div in divs:
-                page = page + 1
+                index = index + 1
                 picUrl = div.a.get('href')
                 picUrlSrc = self.FetchPicUrl(picUrl)
                 ext = picUrlSrc.split(".")[-1]
                 if picUrlSrc:
-                    yield FKImageItem(url=picUrlSrc, name=str(page) + '.' + ext)
+                    yield FKImageItem(url=picUrlSrc, name=str(index) + '.' + ext)
+            
+            totalPages = totalPics // 40
+            if totalPages <= page:
+                return
+            else:
+                yield from self.FetchBenzi(url, page+1)
         except:
             pass
 

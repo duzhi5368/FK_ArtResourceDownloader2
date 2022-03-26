@@ -1,9 +1,6 @@
 import os
 import re
-import time
-from lxml import etree
 
-from typing import NamedTuple
 from GUI.FKUITookits import FKMessageInfo
 from Site.FKBaseFetcher import FKBaseFetcher
 from Site.FKBaseSite import FKBaseSite

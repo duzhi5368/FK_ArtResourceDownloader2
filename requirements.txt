@@ -4,3 +4,4 @@ requests
 pillow
 PixivPy
 gppt
+beautifulsoup4

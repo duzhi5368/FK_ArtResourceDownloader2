@@ -73,7 +73,7 @@ class FKEHantaiTag(FKBaseSite):
             soup = BeautifulSoup(resp.text, 'lxml')
             divs = soup.find_all(class_='gdtm')
             totalPics = int(soup.find('div', id='gdd').find_all(class_="gdt2")[5].string.split(' ')[0])
-            index = 0
+            index = page * 40
             for div in divs:
                 index = index + 1
                 picUrl = div.a.get('href')
@@ -169,7 +169,7 @@ class FKEhantaiSite(FKBaseSite):
             soup = BeautifulSoup(resp.text, 'lxml')
             divs = soup.find_all(class_='gdtm')
             totalPics = int(soup.find('div', id='gdd').find_all(class_="gdt2")[5].string.split(' ')[0])
-            index = 0
+            index = page * 40
             for div in divs:
                 index = index + 1
                 picUrl = div.a.get('href')

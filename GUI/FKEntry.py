@@ -1,6 +1,7 @@
 import os
 
 from Core.FKDownloader import FKDownloader
+from Site.FK18Comic import FK18ComicSite
 from Site.FKArtStation import FKArtStationSite
 from Site.FKBaseSite import FKBaseSite
 from Site.FKHuaban import FKHuabanSite, FKHuabanBoard
@@ -37,4 +38,8 @@ def PixivRun(url, refreshToken, pathPrefix=None):
 
 def PinterestRun(url, pathPrefix=None):
     site = FKPinterestSite(url)
+    return UserHomeRun(site, pathPrefix)
+
+def Comic18Run(url, pathPrefix=None):
+    site = FK18ComicSite(url)
     return UserHomeRun(site, pathPrefix)

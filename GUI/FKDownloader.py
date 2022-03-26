@@ -4,7 +4,7 @@ import tkinter as tk
 from Core.FKDownloader import FKDownloader
 from gppt import GetPixivToken
 from Utils.FKUtilsFunc import RunAsDaemonThread
-from GUI.FKEntry import ArtStationRun, HuabanRun, HuabanBoardRun, PinterestRun, PixivRun
+from GUI.FKEntry import ArtStationRun, HuabanRun, HuabanBoardRun, PinterestRun, PixivRun, Comic18Run
 from GUI.FKUITookits import (
     FKUI_NamedInput,
     FKUI_FileBrowser,
@@ -264,12 +264,23 @@ class FKUI_PinterestDownloader(FKUI_UserHomeDownloader):
         return downloader
 
 #================================================================
+class FKUI_18ComicDOwnlaoder(FKUI_UserHomeDownloader):
+    title = "18Comic 按漫画或关键字"
+    def __init__(self, *args, **kwargs):
+        super(FKUI_18ComicDOwnlaoder, self).__init__(*args, storeName="18comic_save_path", userHomeName="漫画网址或中文关键字", **kwargs)
+        self.SetUrlPlaceholder("https://18comic.org/album/235900/%E9%9B%99%E8%83%9E%E8%83%8E%E7%9A%84%E9%A3%9F%E8%AD%9C-%E6%B7%98%E6%B0%A3%E5%A7%8A%E5%A6%B9%E7%9A%84%E7%A7%98%E5%AF%86%E8%AA%BF%E5%91%B3%E6%96%99-%E7%A6%81%E6%BC%AB%E6%BC%A2%E5%8C%96%E7%B5%84-%E5%8F%8C%E5%AD%90%E3%81%AE%E3%83%AC%E3%82%B7%E3%83%94-%E3%82%A4%E3%82%B1%E3%81%AA%E3%81%84%E5%A7%89%E5%A6%B9%E3%81%AE%E9%9A%A0%E3%81%97%E5%91%B3-%E4%B8%80%E7%B7%92%E3%81%AB%E6%9A%AE%E3%82%89%E3%81%99%E3%81%A3%E3%81%A6")
+
+    def Run(self, url, pathPrefix):
+        downloader = Comic18Run(url=url, pathPrefix=pathPrefix)
+        return downloader
+#================================================================
 FKDownloaders = [
     FKUI_ArtStationDownloader,
     FKUI_HuabanDownloader,
     FKUI_HuabanBoardDownloader,
     FKUI_PixivDownloader,
     FKUI_PinterestDownloader,
+    FKUI_18ComicDOwnlaoder,
     # todo
 ]
 

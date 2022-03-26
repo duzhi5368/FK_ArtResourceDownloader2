@@ -4,7 +4,7 @@ from Core.FKDownloader import FKDownloader
 from Site.FK18Comic import FK18ComicSite
 from Site.FKArtStation import FKArtStationSite
 from Site.FKBaseSite import FKBaseSite
-from Site.FKEHantai import FKEhantaiSite
+from Site.FKEHantai import FKEHantaiTag, FKEhantaiSite
 from Site.FKHuaban import FKHuabanSite, FKHuabanBoard
 from Site.FKPinterest import FKPinterestSite
 from Site.FKPixiv import FKPixivSite
@@ -47,4 +47,8 @@ def Comic18Run(url, pathPrefix=None):
 
 def EHantaiRun(url, pathPrefix=None):
     site = FKEhantaiSite(url)
+    return UserHomeRun(site, pathPrefix)
+
+def EHantaiByTagRun(url, pathPrefix=None):
+    site = FKEHantaiTag(url)
     return UserHomeRun(site, pathPrefix)
